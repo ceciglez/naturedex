@@ -18,6 +18,9 @@
   --color-dim: var(--dim);
   --color-lcd-bg: var(--lcd-bg);
   --color-lcd-ink: var(--lcd-ink);
+  --color-alt-dusk: var(--alt-dusk);
+  --color-shell-edge: var(--shell-edge);
+  --color-abyss: var(--abyss);
 
   --font-display: var(--font-press-start), monospace;
   --font-ui: var(--font-silkscreen), monospace;
@@ -48,4 +51,23 @@ body {
 
 [data-tone="mono"] .checker {
   background: repeating-conic-gradient(var(--paper) 0 25%, var(--lime) 0 50%) 0 0 / 64px 64px;
+}
+
+/* Radar sweep: a translucent wedge turning once every 3s. */
+.radar-sweep {
+  background: conic-gradient(from 0deg, transparent 0deg 300deg, color-mix(in srgb, var(--radar-sweep) 10%, transparent) 300deg, color-mix(in srgb, var(--radar-sweep) 55%, transparent) 360deg);
+  animation: radar-spin 3s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes radar-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radar-sweep {
+    animation: none;
+  }
 }

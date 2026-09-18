@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 import { SoundToggle } from "@/components/title/SoundToggle";
+import { StartButton } from "@/components/title/StartButton";
 
 // Positions come from "Screen · Title v2" (390×844) in the .pen file.
 const FLOATS = [
@@ -46,12 +46,7 @@ export default function TitleScreen() {
 
         <div className="mt-auto flex flex-col items-center">
           <SoundToggle />
-          <Link
-            href="/map"
-            className="mt-[77px] flex w-60 items-center justify-center border-[3px] border-ink bg-sun px-[22px] py-[15px] font-display text-base text-ink shadow-[4px_4px_0_#45243555] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_#45243555]"
-          >
-            START SCAN
-          </Link>
+          <StartButton />
           <footer className="mt-[96px] flex flex-col items-center gap-2">
             <p className="font-display text-xs text-ink">2026</p>
             <p className="font-ui text-[10px] tracking-[1px] text-black">OBSERVATION DATA © iNATURALIST</p>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { DotGothic16, Press_Start_2P, Silkscreen } from "next/font/google";
 import "./globals.css";
+import { TONE_KEY } from "@/lib/tone";
 
 const pressStart = Press_Start_2P({
   variable: "--font-press-start",
@@ -38,8 +39,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       data-tone="color"
+      suppressHydrationWarning
       className={`${pressStart.variable} ${silkscreen.variable} ${dotGothic.variable} h-full`}
     >
+      <head>
+        {/* Apply the remembered colour / 1-bit tone before first paint. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem("${TONE_KEY}")==="mono")document.documentElement.dataset.tone="mono"}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-full">
         {/* Phone-sized stage: full-bleed on phones, centred 390px column on larger screens. */}
         <div className="relative mx-auto min-h-dvh w-full max-w-[390px] overflow-hidden">{children}</div>

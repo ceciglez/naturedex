@@ -88,6 +88,14 @@
   --map-build-edge: #7a4e9e;
   --map-path: #f5e1a4;
 
+  /* Radar disc (Screen · Map · Radar Open v2) */
+  --radar-bg: #1f4e6b;
+  --radar-ripple: #2e86ab;
+  --radar-tuft: #7fa872;
+  --radar-ring: #b7dcefaa;
+  --radar-bubble: #dce8ec;
+  --radar-sweep: #b7dcef;
+
   --px: 4px;
   --gap-sm: 8px;
   --gap-md: 16px;
@@ -171,4 +179,11 @@
   --map-build: #ddedd5;
   --map-build-edge: #452435;
   --map-path: #452435;
+
+  --radar-bg: #452435;
+  --radar-ripple: #ddedd5;
+  --radar-tuft: #ddedd5;
+  --radar-ring: #ddedd5;
+  --radar-bubble: #ddedd5;
+  --radar-sweep: #ddedd5;
 }

@@ -1,6 +1,6 @@
 # Naturedex: Requirements
 
-_Living document. Last updated 2026-09-18. Status: **draft**. Screen-level requirements are provisional until the UX flows in `naturedex_design_system.pen` are finished._
+_Living document. Last updated 2026-09-18 (M1 + M2 shipped). Status: **draft**. Screen-level requirements are provisional until the UX flows in `naturedex_design_system.pen` are finished._
 
 ## 1. Concept
 
@@ -39,6 +39,8 @@ The design frame size is **390 × 844** (iPhone 12–15 class).
 | Repo | `github.com/ceciglez/naturedex` | Every push to `main` deploys automatically |
 | Persistence (v1) | On the device only (IndexedDB) | No accounts; fast to ship; works offline |
 | iNaturalist login | Later milestone ("Share to iNaturalist") | iNat suits real sightings, not game state or sketches |
+| Map data source | OpenFreeMap vector tiles, not Overpass | Overpass timed out (504) in testing and rate-limits shared servers; OpenFreeMap serves the same OSM tags from a CDN with no limits |
+| Spawns | Real research-grade iNat observations within 600 m; one creature per species at its latest sighting, nudged off roads onto the nearest walkable cell | Creatures stand where they were really seen |
 
 ## 4. Tech stack
 
@@ -48,7 +50,7 @@ The design frame size is **390 × 844** (iPhone 12–15 class).
 | Styling | Tailwind CSS v4 + CSS custom properties generated from the .pen variables. Tone switches through `data-tone="color" \| "mono"` on `<html>` |
 | Fonts | `next/font/google`: Press Start 2P, Silkscreen, DotGothic16 |
 | Map rendering | Custom `<canvas>` renderer on a pixel cell grid (no slippy-map library) |
-| Map data | OpenStreetMap through the Overpass API, proxied at `/api/osm` and cached at Vercel's edge |
+| Map data | OpenStreetMap vector tiles from **OpenFreeMap** (OpenMapTiles schema, z14, ≈0.6 m precision), fetched straight from their CDN by the browser. No key, no server of ours, $0 |
 | Species data | iNaturalist API v1, proxied at `/api/inat/*` with short caching |
 | State | Zustand (UI); Dexie / IndexedDB (Dex, pet, notes, sketches) |
 | Device | Geolocation `watchPosition`; Device Orientation for the radar heading |
@@ -85,6 +87,14 @@ The design frame size is **390 × 844** (iPhone 12–15 class).
 
 Sprites are drawn only at whole-number multiples, so they are never resampled.
 
+**How it's built:** a 6 px cell at display zoom z is exactly one Web-Mercator pixel at zoom z − 2. The engine rasterises each 256 × 256-cell chunk from the z14 source tile into a class grid (even-odd scanline fill; roads stamped at their real width in cells), paints one pixel per cell, and draws it ×6 with smoothing off. The metres per cell in the table hold at the equator; at New York's latitude, z18 is ≈ 1.8 m per cell.
+
+**Colour choices not in the spec (designer to confirm):**
+- URBAN ground uses `alt-paper` (#DDEDD5). With `map-build` everywhere, whole cities would turn purple.
+- MEADOW uses `cloud` and SCRUB uses `grass`, so both read differently from PARK.
+- WETLAND uses `alt-aqua` with `grass` speckle, following the OSM → Map Texture frame.
+- In 1-bit mode, trails are dotted rather than solid ink.
+
 ## 6. Creature sprite system
 
 Every iNaturalist taxon ID resolves **deterministically** to a sprite, so no species ever needs hand-drawn art.
@@ -98,6 +108,7 @@ Every iNaturalist taxon ID resolves **deterministically** to a sprite, so no spe
 - 12 iconic taxa × 2–6 family silhouettes = **46 base sprites**, each with 4 palette slots, 3 pattern masks and 3 size tiers, for **≈ 1,650 distinct creatures**.
 - **Fallback:** unmatched taxa use the next rank up, so a species with no skin still shows the correct family silhouette.
 - Each creature gets a playful display name (e.g. _Monark_ for _Danaus plexippus_) alongside its real common and scientific names.
+- **Built so far (M2):** the 18 Atlas creatures are extracted from the .pen as token-coloured pixel data (`src/lib/sprites/atlas-rects.json`), matched by iNaturalist family taxon id and falling back to the iconic taxon. Species skins are a single deterministic palette remap of the main body colour. Pattern masks, size tiers and the remaining 28 silhouettes come in M3.
 
 ## 7. Screens and features (v1, provisional)
 
@@ -140,8 +151,8 @@ Every iNaturalist taxon ID resolves **deterministically** to a sprite, so no spe
 | Milestone | Scope |
 |---|---|
 | **M0** Foundation | Repo, Next.js scaffold, design tokens + fonts, placeholder Title screen, Vercel deploy on push |
-| **M1** Map engine | Overpass proxy, tag → cell classifier (unit-tested against §5), canvas renderer with colour + 1-bit motifs, geolocation, zoom |
-| **M2** Spawns + Radar | iNat nearby observations → biome-filtered spawns; radar drawer; tiered markers |
+| **M1** Map engine ✅ | Overpass proxy, tag → cell classifier (unit-tested against §5), canvas renderer with colour + 1-bit motifs, geolocation, zoom |
+| **M2** Spawns + Radar ✅ | iNat nearby observations → biome-filtered spawns; radar drawer; tiered markers |
 | **M3** Sprites | Export base sprites and masks from the .pen file; taxon → sprite resolver; palette remap |
 | **M4** Core loop | Encounter → New Species → Field Dex → Species + Community; IndexedDB |
 | **M5** Companion & polish | Field Note, Sketch Pad, Tamagotchi layer, empty/error states, PWA offline |
@@ -155,3 +166,7 @@ Every iNaturalist taxon ID resolves **deterministically** to a sprite, so no spe
 - [ ] Spawn rules: how many creatures, how often they refresh, and the radius and research-grade filters.
 - [ ] Are the local pixel fonts in `images/` (Pixel Operator, Minecraftia, Daydream) used anywhere, or only the three Google fonts?
 - [ ] iNaturalist app registration requirements, to check before M6.
+- [ ] Radar copy says "Nothing logged within 250m **in the last hour**". Recent research-grade sightings are rare, so v1 uses all-time sightings and drops "in the last hour". Keep it that way?
+- [ ] Creature names: the Atlas nickname (e.g. _Monark_) is used only for the exemplar species; other species show their common name. Should every species get a generated nickname?
+- [ ] Radar "OPEN SETTINGS" can't open phone settings from the web, so it became "HOW TO TURN IT ON" with instructions.
+- [ ] "WHAT'S IN SEASON ▸" on the empty radar isn't built yet.
