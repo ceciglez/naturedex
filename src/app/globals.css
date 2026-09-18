@@ -1,0 +1,51 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-deep: var(--ink-deep);
+  --color-shadow: var(--shadow);
+  --color-paper: var(--paper);
+  --color-sun: var(--sun);
+  --color-lime: var(--lime);
+  --color-moss: var(--moss);
+  --color-grass: var(--grass);
+  --color-sky: var(--sky);
+  --color-water: var(--water);
+  --color-berry: var(--berry);
+  --color-rust: var(--rust);
+  --color-stone: var(--stone);
+  --color-dim: var(--dim);
+  --color-lcd-bg: var(--lcd-bg);
+  --color-lcd-ink: var(--lcd-ink);
+
+  --font-display: var(--font-press-start), monospace;
+  --font-ui: var(--font-silkscreen), monospace;
+  --font-body: var(--font-dotgothic), monospace;
+}
+
+html,
+body {
+  background: var(--ink-deep);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Sprites are only ever scaled by whole multiples, never smoothed. */
+.pixelated {
+  image-rendering: pixelated;
+}
+
+/* Title screen checkerboard: 32px squares, from "Screen · Title v2". */
+.checker {
+  background: repeating-conic-gradient(#a8d05a 0 25%, #8fd3e8 0 50%) 0 0 / 64px 64px;
+}
+
+[data-tone="mono"] .checker {
+  background: repeating-conic-gradient(var(--paper) 0 25%, var(--lime) 0 50%) 0 0 / 64px 64px;
+}

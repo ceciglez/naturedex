@@ -1,0 +1,174 @@
+/*
+ * Design tokens from naturedex_design_system.pen (Variables).
+ * The .pen `tone` theme maps to `data-tone` on <html>: "color" (default) or "mono" (1-bit).
+ * Keep in sync with the .pen file; map tokens are mirrored in src/lib/map/palette.ts.
+ */
+
+:root,
+[data-tone="color"] {
+  --ink: #452435;
+  --shadow: #5e3348;
+  --moss: #567f4c;
+  --grass: #7fa872;
+  --lime: #a3c596;
+  --sand: #f5e1a4;
+  --bark: #8a5a73;
+  --soil: #5e3348;
+  --abyss: #2d6e96;
+  --water: #2d6e96;
+  --sky: #b7dcef;
+  --foam: #f1f8ec;
+  --bone: #f1f8ec;
+  --rust: #c96a3f;
+  --sun: #f5e1a4;
+  --berry: #b1456b;
+  --cloud: #c2ddb6;
+  --lcd-bg: #c2ddb6;
+  --lcd-dim: #a3c596;
+  --lcd-ink: #452435;
+  --shell: #f1f8ec;
+  --shell-edge: #d3bcc8;
+  --blossom: #f2b5c4;
+  --violet: #7a4e9e;
+  --teal: #2f8e7f;
+  --stone: #8a5a73;
+  --dim: #d3bcc8;
+  --paper: #f1f8ec;
+  --void: #2c1622;
+  --ink-deep: #2c1622;
+  --shadow-2: #5e3348;
+  --shadow-3: #2c1622;
+  --shadow-4: #2c1622;
+  --shadow-5: #2c1622;
+  --mono-ink: #452435;
+  --mono-paper: #ddedd5;
+  --ring-1: #c2ddb6;
+  --ring-2: #a3c596;
+  --ring-3: #7fa872;
+  --elytra-2: #b1456b;
+  --elytra-3: #c96a3f;
+
+  --alt-ink: #452435;
+  --alt-ink-deep: #2c1622;
+  --alt-plum: #5e3348;
+  --alt-mauve: #8a5a73;
+  --alt-dusk: #b08ba0;
+  --alt-haze: #d3bcc8;
+  --alt-stone: #9a8d93;
+  --alt-paper: #ddedd5;
+  --alt-paper-hi: #f1f8ec;
+  --alt-mint: #c2ddb6;
+  --alt-sage: #a3c596;
+  --alt-fern: #7fa872;
+  --alt-moss: #567f4c;
+  --alt-pine: #33502f;
+  --alt-rose: #f2b5c4;
+  --alt-peach: #f7c6a5;
+  --alt-butter: #f5e1a4;
+  --alt-aqua: #a5dcd8;
+  --alt-sky: #b7dcef;
+  --alt-peri: #a8b8e8;
+  --alt-lilac: #c9b6e4;
+  --alt-berry: #b1456b;
+  --alt-ember: #c96a3f;
+  --alt-amber: #c9922b;
+  --alt-jade: #2f8e7f;
+  --alt-ocean: #2d6e96;
+  --alt-indigo: #4a54a8;
+  --alt-orchid: #7a4e9e;
+
+  --map-park: #a3c596;
+  --map-wood: #567f4c;
+  --map-water: #b7dcef;
+  --map-shore: #f5e1a4;
+  --map-road: #d3bcc8;
+  --map-road-line: #f1f8ec;
+  --map-road-edge: #b08ba0;
+  --map-build: #c9b6e4;
+  --map-build-edge: #7a4e9e;
+  --map-path: #f5e1a4;
+
+  --px: 4px;
+  --gap-sm: 8px;
+  --gap-md: 16px;
+  --gap-lg: 24px;
+}
+
+/* 1-bit mode: everything collapses to ink (#452435) or paper (#DDEDD5). */
+[data-tone="mono"] {
+  --shadow: #452435;
+  --moss: #452435;
+  --grass: #ddedd5;
+  --lime: #ddedd5;
+  --sand: #ddedd5;
+  --bark: #ddedd5;
+  --soil: #452435;
+  --abyss: #452435;
+  --water: #ddedd5;
+  --sky: #ddedd5;
+  --foam: #ddedd5;
+  --bone: #ddedd5;
+  --rust: #ddedd5;
+  --sun: #ddedd5;
+  --berry: #452435;
+  --cloud: #ddedd5;
+  --lcd-bg: #ddedd5;
+  --lcd-dim: #ddedd5;
+  --shell: #ddedd5;
+  --shell-edge: #452435;
+  --blossom: #ddedd5;
+  --violet: #452435;
+  --teal: #ddedd5;
+  --stone: #452435;
+  --dim: #ddedd5;
+  --paper: #ddedd5;
+  --void: #452435;
+  --ink-deep: #452435;
+  --shadow-2: #452435;
+  --shadow-3: #452435;
+  --shadow-4: #452435;
+  --shadow-5: #452435;
+  --ring-1: #ddedd5;
+  --ring-2: #ddedd5;
+  --ring-3: #ddedd5;
+  --elytra-2: #ddedd5;
+  --elytra-3: #ddedd5;
+
+  --alt-ink-deep: #452435;
+  --alt-plum: #452435;
+  --alt-mauve: #452435;
+  --alt-dusk: #452435;
+  --alt-haze: #ddedd5;
+  --alt-stone: #452435;
+  --alt-paper-hi: #ddedd5;
+  --alt-mint: #ddedd5;
+  --alt-sage: #ddedd5;
+  --alt-fern: #452435;
+  --alt-moss: #452435;
+  --alt-pine: #452435;
+  --alt-rose: #ddedd5;
+  --alt-peach: #ddedd5;
+  --alt-butter: #ddedd5;
+  --alt-aqua: #ddedd5;
+  --alt-sky: #ddedd5;
+  --alt-peri: #ddedd5;
+  --alt-lilac: #ddedd5;
+  --alt-berry: #452435;
+  --alt-ember: #452435;
+  --alt-amber: #452435;
+  --alt-jade: #452435;
+  --alt-ocean: #452435;
+  --alt-indigo: #452435;
+  --alt-orchid: #452435;
+
+  --map-park: #ddedd5;
+  --map-wood: #452435;
+  --map-water: #452435;
+  --map-shore: #452435;
+  --map-road: #ddedd5;
+  --map-road-line: #452435;
+  --map-road-edge: #452435;
+  --map-build: #ddedd5;
+  --map-build-edge: #452435;
+  --map-path: #452435;
+}
