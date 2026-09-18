@@ -12,6 +12,8 @@ interface INatObservation {
   location: string | null;
   observed_on: string | null;
   obscured: boolean;
+  identifications_count?: number;
+  num_identification_agreements?: number;
   user?: { login: string };
   taxon?: {
     id: number;
@@ -78,6 +80,8 @@ export async function GET(req: NextRequest) {
           ancestorIds: o.taxon.ancestor_ids ?? [],
         },
         photo: photo ? { url: photo.url.replace("/square.", "/medium."), attribution: photo.attribution } : null,
+        idAgree: o.num_identification_agreements ?? 0,
+        idTotal: o.identifications_count ?? 0,
       },
     ];
   });

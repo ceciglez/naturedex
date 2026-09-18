@@ -5,10 +5,13 @@ import { MapCanvas } from "./MapCanvas";
 import { ClusterBadge, CreatureMarker, tierForZoom } from "./CreatureMarker";
 import { PlaceSearch } from "./PlaceSearch";
 import { SearchPill } from "./SearchPill";
-import { CreatureRow, RadarDrawer, type Range } from "@/components/radar/RadarDrawer";
+import { RadarDrawer, type Range } from "@/components/radar/RadarDrawer";
 import { HeadingCone, PlayerPuck } from "@/components/ui/PixelIcon";
 import { LockGlyph, StateMessage } from "@/components/ui/StateMessage";
 import { TabBar } from "@/components/ui/TabBar";
+import { Encounter } from "@/components/encounter/Encounter";
+import { useDex } from "@/hooks/useDex";
+import { rememberLocalSpecies } from "@/lib/dex/store";
 import { useHeading } from "@/hooks/useHeading";
 import { useLocation } from "@/hooks/useLocation";
 import { useNearby } from "@/hooks/useNearby";
@@ -38,6 +41,16 @@ export function MapScreen({ initialRadar = false, initialZoom = DEFAULT_ZOOM }: 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [choosing, setChoosing] = useState(false);
   const [placeName, setPlaceName] = useState<string | null>(null);
+  const [encounterId, setEncounterId] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const dex = useDex();
+  const caught = useMemo(() => new Set(dex.entries.map((e) => String(e.taxonId))), [dex.entries]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2600);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   useEffect(() => engine.setTone(tone), [engine, tone]);
 
@@ -62,14 +75,21 @@ export function MapScreen({ initialRadar = false, initialZoom = DEFAULT_ZOOM }: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nearby.observations, position, engine, engineVersion]);
 
-  const selected = spawns.find((s) => s.id === selectedId) ?? null;
+  // The Dex total: species that can turn up around you (all spawnable species from the last sweep).
+  useEffect(() => {
+    if (nearby.status === "ready") rememberLocalSpecies(new Set(nearby.observations.map((o) => o.taxon.id)).size || null);
+  }, [nearby.status, nearby.observations]);
   const inRange = spawns.filter((s) => s.distanceM <= range).length;
   const here = position ? engine.cellAt(position) : undefined;
   const biome = here === undefined ? "SCANNING" : CELL_INFO[here].label;
 
   const onViewport = useCallback((v: Vp) => setVp(v), []);
   const toggleRadar = useCallback(() => setRadarOpen((o) => !o), []);
-  const select = useCallback((s: Spawn) => setSelectedId((id) => (id === s.id ? null : s.id)), []);
+  const select = useCallback((s: Spawn) => {
+    setSelectedId(s.id);
+    setEncounterId(s.id);
+  }, []);
+  const encounter = spawns.find((s) => s.id === encounterId) ?? null;
 
   if (location.status === "denied" || location.status === "unavailable") {
     return (
@@ -95,7 +115,7 @@ export function MapScreen({ initialRadar = false, initialZoom = DEFAULT_ZOOM }: 
   const tier = tierForZoom(zoom);
 
   return (
-    <div className="flex h-dvh flex-col">
+    <div className="relative flex h-dvh flex-col">
       <div className="relative flex-1 overflow-hidden bg-[var(--map-park)]">
         {position && (
           <MapCanvas engine={engine} center={position} zoom={zoom} onZoom={setZoom} onViewport={onViewport}>
@@ -108,7 +128,16 @@ export function MapScreen({ initialRadar = false, initialZoom = DEFAULT_ZOOM }: 
                     const p = engine.project(s.at, position, zoom, vp);
                     if (p.x < -80 || p.y < -80 || p.x > vp.cssWidth + 80 || p.y > vp.cssHeight + 80) return null;
                     return (
-                      <CreatureMarker key={s.id} spawn={s} tier={tier} x={p.x} y={p.y} selected={s.id === selectedId} onSelect={() => select(s)} />
+                      <CreatureMarker
+                        key={s.id}
+                        spawn={s}
+                        tier={tier}
+                        x={p.x}
+                        y={p.y}
+                        selected={s.id === selectedId}
+                        caught={caught.has(s.id)}
+                        onSelect={() => select(s)}
+                      />
                     );
                   })
                 )}
@@ -135,18 +164,10 @@ export function MapScreen({ initialRadar = false, initialZoom = DEFAULT_ZOOM }: 
           </div>
         )}
 
-        {selected && !radarOpen && (
-          <div className="absolute inset-x-4 bottom-8 z-10 flex flex-col gap-2">
-            <CreatureRow spawn={selected} onClick={() => setSelectedId(null)} />
-            <a
-              href={`https://www.inaturalist.org/observations/${selected.observation.id}`}
-              target="_blank"
-              rel="noreferrer"
-              className="self-end border-2 border-ink bg-sun px-3 py-1.5 font-ui text-[10px] tracking-[1px] text-ink"
-            >
-              SEEN BY @{selected.observation.user} ON iNATURALIST ▸
-            </a>
-          </div>
+        {toast && (
+          <p role="status" className="absolute inset-x-4 bottom-8 z-10 border-[3px] border-ink bg-sun px-3 py-2 text-center font-display text-[11px] text-ink">
+            {toast}
+          </p>
         )}
 
         <p className="absolute bottom-1 right-1.5 z-0 font-ui text-[8px] text-ink/70">
@@ -161,14 +182,27 @@ export function MapScreen({ initialRadar = false, initialZoom = DEFAULT_ZOOM }: 
             status={nearby.status}
             onRetry={nearby.retry}
             onClose={toggleRadar}
-            onSelect={(s) => {
-              setSelectedId(s.id);
-            }}
+            onSelect={select}
             selectedId={selectedId}
           />
         )}
       </div>
       <TabBar active={radarOpen ? "radar" : "map"} onRadar={toggleRadar} />
+
+      {encounter && position && (
+        <Encounter
+          spawn={encounter}
+          player={position}
+          biome={(() => {
+            const c = engine.cellAt(encounter.at);
+            return c === undefined ? null : CELL_INFO[c].biome;
+          })()}
+          onClose={(logged) => {
+            setEncounterId(null);
+            if (logged && !logged.isNew) setToast(`LOGGED · SIGHTING ${logged.entry.sightings.length}`);
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 # Naturedex: Requirements
 
-_Living document. Last updated 2026-09-18 (M1 + M2 shipped). Status: **draft**. Screen-level requirements are provisional until the UX flows in `naturedex_design_system.pen` are finished._
+_Living document. Last updated 2026-09-18 (M1, M2 and M4 shipped). Status: **draft**. Screen-level requirements are provisional until the UX flows in `naturedex_design_system.pen` are finished._
 
 ## 1. Concept
 
@@ -40,6 +40,8 @@ The design frame size is **390 × 844** (iPhone 12–15 class).
 | Persistence (v1) | On the device only (IndexedDB) | No accounts; fast to ship; works offline |
 | iNaturalist login | Later milestone ("Share to iNaturalist") | iNat suits real sightings, not game state or sketches |
 | Map data source | OpenFreeMap vector tiles, not Overpass | Overpass timed out (504) in testing and rate-limits shared servers; OpenFreeMap serves the same OSM tags from a CDN with no limits |
+| Catching | OBSERVE logs to the on-device Dex (IndexedDB) when you're within 150 m of the creature. Nothing is uploaded to iNaturalist yet (that's M6), so the Encounter hint says so | Honest about what happens today |
+| Dex total ("n / 109") | Distinct species in the last radar sweep, i.e. what can actually turn up around you | All-time species within 600 m ran to 2,270 in Prospect Park: unreachable |
 | Spawns | Real research-grade iNat observations within 600 m; one creature per species at its latest sighting, nudged off roads onto the nearest walkable cell | Creatures stand where they were really seen |
 
 ## 4. Tech stack
@@ -154,7 +156,7 @@ Every iNaturalist taxon ID resolves **deterministically** to a sprite, so no spe
 | **M1** Map engine ✅ | Overpass proxy, tag → cell classifier (unit-tested against §5), canvas renderer with colour + 1-bit motifs, geolocation, zoom |
 | **M2** Spawns + Radar ✅ | iNat nearby observations → biome-filtered spawns; radar drawer; tiered markers |
 | **M3** Sprites | Export base sprites and masks from the .pen file; taxon → sprite resolver; palette remap |
-| **M4** Core loop | Encounter → New Species → Field Dex → Species + Community; IndexedDB |
+| **M4** Core loop ✅ | Encounter → New Species → Field Dex → Species + Community; IndexedDB |
 | **M5** Companion & polish | Field Note, Sketch Pad, Tamagotchi layer, empty/error states, PWA offline |
 | **M6** Post-v1 | iNaturalist OAuth + "Share sighting"; optional cloud sync |
 
@@ -170,3 +172,6 @@ Every iNaturalist taxon ID resolves **deterministically** to a sprite, so no spe
 - [ ] Creature names: the Atlas nickname (e.g. _Monark_) is used only for the exemplar species; other species show their common name. Should every species get a generated nickname?
 - [ ] Radar "OPEN SETTINGS" can't open phone settings from the web, so it became "HOW TO TURN IT ON" with instructions.
 - [ ] "WHAT'S IN SEASON ▸" on the empty radar isn't built yet.
+- [ ] Encounter: is 150 m the right reach for OBSERVE? And should the Encounter show a life-stage chip ("EFT STAGE")? iNat has it as an annotation that we don't fetch yet.
+- [ ] Species › COMMUNITY (local names, others' sketches and notes) needs shared storage and accounts. It shows an empty state until then.
+- [ ] Dex offline banner ("1 SIGHTING WAITING TO UPLOAD") only matters once uploading exists (M6).

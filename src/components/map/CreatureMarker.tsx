@@ -18,11 +18,13 @@ interface CreatureMarkerProps {
   x: number;
   y: number;
   selected: boolean;
+  /** Already in the Field Dex. */
+  caught?: boolean;
   onSelect: () => void;
 }
 
 /** Map Marker: paper box + sprite + tail; the tail tip sits on the sighting. */
-export function CreatureMarker({ spawn, tier, x, y, selected, onSelect }: CreatureMarkerProps) {
+export function CreatureMarker({ spawn, tier, x, y, selected, caught, onSelect }: CreatureMarkerProps) {
   const { box, sprite, border } = BOX[tier];
   const tail = tier === 1 ? 0 : 10;
   const name = displayName(spawn);
@@ -30,15 +32,18 @@ export function CreatureMarker({ spawn, tier, x, y, selected, onSelect }: Creatu
     <button
       type="button"
       onClick={onSelect}
-      aria-label={`${name}, ${Math.round(spawn.distanceM)} metres away`}
+      aria-label={`${name}, ${Math.round(spawn.distanceM)} metres away${caught ? ", in your Dex" : ""}`}
       className="absolute flex flex-col items-center"
       style={{ left: x, top: y, transform: `translate(-50%, -${tier === 1 ? box / 2 : box + tail}px)`, zIndex: selected ? 5 : 1 }}
     >
       <span
-        className={`flex items-center justify-center border-ink ${selected ? "bg-sun" : "bg-paper"}`}
+        className={`relative flex items-center justify-center border-ink ${selected ? "bg-sun" : "bg-paper"}`}
         style={{ width: box, height: box, borderWidth: border }}
       >
         <Sprite sprite={spawn.sprite} size={sprite} />
+        {caught && tier > 1 && (
+          <span aria-hidden className="absolute -right-1.5 -top-1.5 size-3 border-2 border-ink bg-teal" />
+        )}
       </span>
       {tail > 0 && <PixelIcon name="tail" size={28} className="-mt-px text-ink" />}
       {tier === 3 && (

@@ -21,6 +21,18 @@
   --color-alt-dusk: var(--alt-dusk);
   --color-shell-edge: var(--shell-edge);
   --color-abyss: var(--abyss);
+  --color-teal: var(--teal);
+  --color-bone: var(--bone);
+  --color-cloud: var(--cloud);
+  --color-blossom: var(--blossom);
+  --color-violet: var(--violet);
+  --color-soil: var(--soil);
+  --color-void: var(--void);
+  --color-alt-peach: var(--alt-peach);
+  --color-alt-aqua: var(--alt-aqua);
+  --color-alt-butter: var(--alt-butter);
+  --color-alt-haze: var(--alt-haze);
+  --color-alt-lilac: var(--alt-lilac);
 
   --font-display: var(--font-press-start), monospace;
   --font-ui: var(--font-silkscreen), monospace;
@@ -68,6 +80,34 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .radar-sweep {
+    animation: none;
+  }
+}
+
+/* Creature idle: a two-frame, whole-pixel bob. */
+.creature-idle {
+  animation: creature-bob 1.2s steps(1, end) infinite;
+}
+
+@keyframes creature-bob {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.sparkle {
+  animation: sparkle-blink 1.6s steps(1, end) infinite;
+}
+
+@keyframes sparkle-blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .creature-idle,
+  .sparkle {
     animation: none;
   }
 }
